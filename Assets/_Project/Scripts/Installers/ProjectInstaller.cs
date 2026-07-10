@@ -1,6 +1,7 @@
-using TripleMatch.Application;
 using TripleMatch.Application.Services;
+using TripleMatch.Application.StateMachine;
 using TripleMatch.Infrastructure.Logging;
+using TripleMatch.Infrastructure.Scenes;
 using Zenject;
 
 namespace TripleMatch.Installers
@@ -9,14 +10,9 @@ namespace TripleMatch.Installers
     {
         public override void InstallBindings()
         {
-            Container
-                .Bind<ILogService>()
-                .To<LogService>()
-                .AsSingle();
-            
-            Container
-                .BindInterfacesTo<GreeterService>()
-                .AsSingle();
+            Container.Bind<ILogService>().To<LogService>().AsSingle();
+            Container.Bind<ISceneLoader>().To<SceneLoader>().AsSingle();
+            Container.Bind<IGameStateMachine>().To<GameStateMachine>().AsSingle();
         }
     }
 }

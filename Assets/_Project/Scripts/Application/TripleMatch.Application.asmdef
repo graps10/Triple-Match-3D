@@ -2,7 +2,8 @@
     "name": "TripleMatch.Application",
     "rootNamespace": "TripleMatch.Application",
     "references": [
-        "Zenject"
+        "Zenject",
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

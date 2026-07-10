@@ -2,7 +2,8 @@
     "name": "TripleMatch.Infrastructure",
     "rootNamespace": "TripleMatch.Infrastructure",
     "references": [
-        "TripleMatch.Application"
+        "TripleMatch.Application",
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
