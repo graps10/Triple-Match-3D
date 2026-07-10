@@ -5,7 +5,8 @@
         "TripleMatch.Domain",
         "TripleMatch.Configs",
         "TripleMatch.Application",
-        "Zenject"
+        "Zenject",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

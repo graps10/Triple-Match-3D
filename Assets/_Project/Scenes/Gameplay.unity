@@ -197,7 +197,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: TripleMatch.Installers::TripleMatch.Installers.GameplayInstaller
   itemPrefab: {fileID: 1862800450779768622, guid: e05832c5c38b6d7449d91ee84bfba4f4, type: 3}
-  testDefinition: {fileID: 11400000, guid: 332d691258e8af4448d581e21925dbe8, type: 2}
+  itemDefinitions:
+  - {fileID: 11400000, guid: 332d691258e8af4448d581e21925dbe8, type: 2}
+  - {fileID: 11400000, guid: 8642280d2f347c84a8a0e8c630eebe8d, type: 2}
+  - {fileID: 11400000, guid: 45ebeeec906e6d74a9590031406e2612, type: 2}
 --- !u!1 &1796545760
 GameObject:
   m_ObjectHideFlags: 0

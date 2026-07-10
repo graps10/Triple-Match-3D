@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TripleMatch.Configs;
 using TripleMatch.Presentation.Gameplay;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace TripleMatch.Installers
     public class GameplayInstaller : MonoInstaller
     {
         [SerializeField] private ItemView itemPrefab;
-        [SerializeField] private ItemDefinition testDefinition;
+        [SerializeField] private List<ItemDefinition> itemDefinitions;
 
         public override void InstallBindings()
         {
@@ -16,11 +17,22 @@ namespace TripleMatch.Installers
                 .BindFactory<ItemDefinition, ItemView, ItemView.Factory>()
                 .FromComponentInNewPrefab(itemPrefab);
 
-            // TEMPORARY: spawns a few items on scene start to prove the factory works.
+            // Grab the scene's Camera so InputService can raycast from it.
             Container
-                .BindInterfacesTo<ItemSpawnerTest>()
+                .Bind<Camera>()
+                .FromComponentInHierarchy()
+                .AsSingle();
+
+            // Input: a per-frame service (ITickable) that raises ItemPicked on tap.
+            Container
+                .BindInterfacesTo<InputService>()
+                .AsSingle();
+
+            // Board: builds the layout and reacts to picks (IInitializable/IDisposable).
+            Container
+                .BindInterfacesAndSelfTo<BoardService>()
                 .AsSingle()
-                .WithArguments(testDefinition);
+                .WithArguments(itemDefinitions);
         }
     }
 }

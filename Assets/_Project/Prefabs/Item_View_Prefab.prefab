@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4678960038142867568}
   - component: {fileID: 1862800450779768622}
   m_Layer: 0
-  m_Name: Item_Apple_Prefab
+  m_Name: Item_View_Prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
