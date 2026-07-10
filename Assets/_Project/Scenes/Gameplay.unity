@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1290127094}
   - component: {fileID: 1290127093}
+  - component: {fileID: 1290127095}
   m_Layer: 0
   m_Name: SceneContext
   m_TagString: Untagged
@@ -149,7 +150,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zenject::Zenject.SceneContext
   _scriptableObjectInstallers: []
-  _monoInstallers: []
+  _monoInstallers:
+  - {fileID: 1290127095}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -182,6 +184,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1290127095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1290127092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd6c9b2b93ae4a34cb0c2f3587c2bce4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TripleMatch.Installers::TripleMatch.Installers.GameplayInstaller
+  itemPrefab: {fileID: 1862800450779768622, guid: e05832c5c38b6d7449d91ee84bfba4f4, type: 3}
+  testDefinition: {fileID: 11400000, guid: 332d691258e8af4448d581e21925dbe8, type: 2}
 --- !u!1 &1796545760
 GameObject:
   m_ObjectHideFlags: 0

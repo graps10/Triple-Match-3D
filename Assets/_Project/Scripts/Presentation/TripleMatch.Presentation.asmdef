@@ -1,11 +1,10 @@
 {
-    "name": "TripleMatch.Installers",
-    "rootNamespace": "TripleMatch.Installers",
+    "name": "TripleMatch.Presentation",
+    "rootNamespace": "TripleMatch.Presentation",
     "references": [
-        "TripleMatch.Application",
-        "TripleMatch.Infrastructure",
-        "TripleMatch.Presentation",
+        "TripleMatch.Domain",
         "TripleMatch.Configs",
+        "TripleMatch.Application",
         "Zenject"
     ],
     "includePlatforms": [],
