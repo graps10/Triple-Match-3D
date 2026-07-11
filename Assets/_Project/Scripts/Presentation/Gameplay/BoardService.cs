@@ -51,6 +51,7 @@ namespace TripleMatch.Presentation.Gameplay
             Spawn(0, new Vector3(0f, 0f, 0f));
             Spawn(1, new Vector3(1.5f, 0f, 0f));
             Spawn(2, new Vector3(3f, 0f, 0f));
+            Spawn(2, new Vector3(3f, 0f, -0.5f));
             Spawn(2, new Vector3(0f, 0f, -1f)); // overlaps item #0, but closer to the camera
 
             _log.Info($"Board built with {_items.Count} items. Tap them!");

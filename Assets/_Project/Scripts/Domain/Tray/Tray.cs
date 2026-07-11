@@ -25,5 +25,8 @@ namespace TripleMatch.Domain
             _slots.Insert(insertIndex, type);
             return insertIndex;
         }
+
+        // Removes a contiguous run (e.g. a resolved match), shifting later slots left.
+        public void RemoveRun(int startIndex, int count) => _slots.RemoveRange(startIndex, count);
     }
 }

@@ -6,6 +6,7 @@
         "TripleMatch.Infrastructure",
         "TripleMatch.Presentation",
         "TripleMatch.Configs",
+        "TripleMatch.Domain",
         "Zenject"
     ],
     "includePlatforms": [],

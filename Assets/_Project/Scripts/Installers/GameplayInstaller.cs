@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TripleMatch.Application.Signals;
 using TripleMatch.Configs;
+using TripleMatch.Domain;
 using TripleMatch.Presentation.Gameplay;
 using UnityEngine;
 using Zenject;
@@ -16,6 +17,10 @@ namespace TripleMatch.Installers
         {
             SignalBusInstaller.Install(Container);
             Container.DeclareSignal<ItemCollectedSignal>();
+
+            // OptionalSubscriber: nobody listens to this yet (Day 8's win/lose condition
+            // will be the first), so firing it with zero subscribers is expected for now.
+            Container.DeclareSignal<MatchMadeSignal>().OptionalSubscriber();
 
             Container
                 .BindFactory<ItemDefinition, ItemView, ItemView.Factory>()
@@ -42,6 +47,12 @@ namespace TripleMatch.Installers
             Container
                 .Bind<TraySlotsView>()
                 .FromComponentInHierarchy()
+                .AsSingle();
+
+            // Match rule: pure C#, no lifecycle interfaces, so a plain interface bind is enough.
+            Container
+                .Bind<IMatchResolver>()
+                .To<MatchResolver>()
                 .AsSingle();
 
             // Tray: reacts to picks, groups identical items, flies them into slots.

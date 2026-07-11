@@ -13,6 +13,7 @@ namespace TripleMatch.Presentation.Gameplay
         private const float Flight_Duration = 0.35f;
 
         private readonly IInputService _input;
+        private readonly IMatchResolver _matchResolver;
         private readonly SignalBus _signalBus;
         private readonly ILogService _log;
         private readonly TraySlotsView _slotsView;
@@ -24,11 +25,13 @@ namespace TripleMatch.Presentation.Gameplay
 
         public TrayService(
             IInputService input,
+            IMatchResolver matchResolver,
             SignalBus signalBus,
             ILogService log,
             TraySlotsView slotsView)
         {
             _input = input;
+            _matchResolver = matchResolver;
             _signalBus = signalBus;
             _log = log;
             _slotsView = slotsView;
@@ -56,6 +59,36 @@ namespace TripleMatch.Presentation.Gameplay
             FlyItemsToSlots();
 
             _signalBus.Fire(new ItemCollectedSignal(item.Type, slotIndex));
+
+            TryResolveMatch();
+        }
+
+        private void TryResolveMatch()
+        {
+            MatchResult result = _matchResolver.Resolve(_tray.Slots);
+            if (!result.Matched)
+                return;
+
+            _tray.RemoveRun(result.SlotIndex, result.Length);
+            RemoveMatchedViews(result.SlotIndex, result.Length);
+
+            FlyItemsToSlots();
+
+            _signalBus.Fire(new MatchMadeSignal(result.Type, result.SlotIndex));
+        }
+
+        private void RemoveMatchedViews(int startIndex, int length)
+        {
+            for (int i = 0; i < length; i++)
+            {
+                ItemView view = _slotItems[startIndex];
+                _slotItems.RemoveAt(startIndex);
+
+                // Kill any in-flight DOTween tween first, or it tries to update this
+                // Transform next frame after Destroy and throws a missing-target error.
+                view.transform.DOKill();
+                UnityEngine.Object.Destroy(view.gameObject);
+            }
         }
 
         private void FlyItemsToSlots()
