@@ -1,25 +1,29 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using TripleMatch.Application.Levels;
 using TripleMatch.Application.Services;
 using TripleMatch.Application.Signals;
 using TripleMatch.Configs;
+using TripleMatch.Domain;
 using UnityEngine;
 using Zenject;
 
 namespace TripleMatch.Presentation.Gameplay
 {
-    /// <summary>
-    /// Builds and owns the board of items. For now it spawns a small stub layout in layers
-    /// (one item sits closer to the camera = "on top" of another) and logs which item the
-    /// player picks. Real level data + tray routing arrive in later days.
-    /// </summary>
+    // Builds and owns the board of items from the loaded LevelDefinition, and reacts
+    // to picks. Real level data now comes from ILevelLoader (Day 9) instead of a
+    // hardcoded stub layout.
     public class BoardService : IInitializable, IDisposable
     {
+        private const float Layer_Depth_Step = 0.5f;
+
         private readonly ItemView.Factory _factory;
         private readonly IInputService _input;
         private readonly SignalBus _signalBus;
         private readonly ILogService _log;
-        private readonly List<ItemDefinition> _definitions;
+        private readonly ILevelLoader _levelLoader;
+        private readonly Dictionary<ItemType, ItemDefinition> _definitionsByType;
 
         private readonly List<ItemView> _items = new();
 
@@ -28,18 +32,20 @@ namespace TripleMatch.Presentation.Gameplay
             IInputService input,
             SignalBus signalBus,
             ILogService log,
+            ILevelLoader levelLoader,
             List<ItemDefinition> definitions)
         {
             _factory = factory;
             _input = input;
             _signalBus = signalBus;
             _log = log;
-            _definitions = definitions;
+            _levelLoader = levelLoader;
+            _definitionsByType = definitions.ToDictionary(definition => definition.Type);
         }
 
         public void Initialize()
         {
-            BuildStubBoard();
+            BuildBoard(_levelLoader.Load());
             _signalBus.Fire(new BoardBuiltSignal(_items.Count));
             _input.ItemPicked += OnItemPicked;
         }
@@ -49,27 +55,23 @@ namespace TripleMatch.Presentation.Gameplay
             _input.ItemPicked -= OnItemPicked;
         }
 
-        private void BuildStubBoard()
+        private void BuildBoard(LevelDefinition level)
         {
-            // Two matching trios: the whole board is clearable, so tapping everything
-            // proves the Win path (remaining count reaches 0). Day 9 replaces this stub
-            // with real LevelDefinition data.
-            Spawn(0, new Vector3(-1.5f, 0f, 0f));
-            Spawn(0, new Vector3(-0.5f, 0f, 0f));
-            Spawn(0, new Vector3(0.5f, 0f, 0f));
-            Spawn(1, new Vector3(1.5f, 0f, 0f));
-            Spawn(1, new Vector3(2.5f, 0f, 0f));
-            Spawn(1, new Vector3(3.5f, 0f, 0f));
-            Spawn(1, new Vector3(3.5f, 0f, 0f));
+            foreach (LevelItemEntry entry in level.Items)
+                Spawn(entry);
 
             _log.Info($"Board built with {_items.Count} items. Tap them!");
         }
 
-        private void Spawn(int definitionIndex, Vector3 position)
+        private void Spawn(LevelItemEntry entry)
         {
-            ItemDefinition definition = _definitions[definitionIndex % _definitions.Count];
+            ItemDefinition definition = _definitionsByType[entry.Type];
             ItemView item = _factory.Create(definition);
-            item.transform.position = position;
+
+            // Higher layer = closer to the camera = picked first when items overlap.
+            float z = entry.Position.y - entry.Layer * Layer_Depth_Step;
+            item.transform.position = new Vector3(entry.Position.x, 0f, z);
+
             _items.Add(item);
         }
 

@@ -3,6 +3,7 @@
     "rootNamespace": "TripleMatch.Application",
     "references": [
         "TripleMatch.Domain",
+        "TripleMatch.Configs",
         "Zenject",
         "UniTask"
     ],

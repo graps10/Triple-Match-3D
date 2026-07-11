@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TripleMatch.Application.Levels;
 using TripleMatch.Application.Signals;
 using TripleMatch.Configs;
 using TripleMatch.Domain;
@@ -12,6 +13,7 @@ namespace TripleMatch.Installers
     {
         [SerializeField] private ItemView itemPrefab;
         [SerializeField] private List<ItemDefinition> itemDefinitions;
+        [SerializeField] private List<LevelDefinition> levels;
 
         public override void InstallBindings()
         {
@@ -42,6 +44,19 @@ namespace TripleMatch.Installers
             // Input: a per-frame service (ITickable) that raises ItemPicked on tap.
             Container
                 .BindInterfacesTo<InputService>()
+                .AsSingle();
+
+            // Level data: hand-authored today, swappable for a procedural source later
+            // (GDD §16) without touching anything that consumes ILevelLoader.
+            Container
+                .Bind<ILevelSource>()
+                .To<HandcraftedLevelSource>()
+                .AsSingle()
+                .WithArguments(levels);
+
+            Container
+                .Bind<ILevelLoader>()
+                .To<LevelLoader>()
                 .AsSingle();
 
             // Board: builds the layout and reacts to picks (IInitializable/IDisposable).
