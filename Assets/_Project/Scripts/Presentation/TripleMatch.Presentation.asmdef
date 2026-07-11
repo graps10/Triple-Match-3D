@@ -6,7 +6,8 @@
         "TripleMatch.Configs",
         "TripleMatch.Application",
         "Zenject",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

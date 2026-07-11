@@ -3,7 +3,10 @@
     "rootNamespace": "TripleMatch.Infrastructure",
     "references": [
         "TripleMatch.Application",
-        "UniTask"
+        "UniTask",
+        "UniTask.Addressables",
+        "Unity.Addressables",
+        "Unity.ResourceManager"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

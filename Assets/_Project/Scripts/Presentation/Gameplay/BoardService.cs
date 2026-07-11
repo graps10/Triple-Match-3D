@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using TripleMatch.Application.Levels;
 using TripleMatch.Application.Services;
 using TripleMatch.Application.Signals;
@@ -11,9 +12,6 @@ using Zenject;
 
 namespace TripleMatch.Presentation.Gameplay
 {
-    // Builds and owns the board of items from the loaded LevelDefinition, and reacts
-    // to picks. Real level data now comes from ILevelLoader (Day 9) instead of a
-    // hardcoded stub layout.
     public class BoardService : IInitializable, IDisposable
     {
         private const float Layer_Depth_Step = 0.5f;
@@ -45,8 +43,9 @@ namespace TripleMatch.Presentation.Gameplay
 
         public void Initialize()
         {
-            BuildBoard(_levelLoader.Load());
-            _signalBus.Fire(new BoardBuiltSignal(_items.Count));
+            // Initialize() can't be async itself (Zenject's IInitializable contract is
+            // synchronous), so kick off the load as fire-and-forget UniTaskVoid instead.
+            BuildBoardAsync().Forget();
             _input.ItemPicked += OnItemPicked;
         }
 
@@ -55,12 +54,15 @@ namespace TripleMatch.Presentation.Gameplay
             _input.ItemPicked -= OnItemPicked;
         }
 
-        private void BuildBoard(LevelDefinition level)
+        private async UniTaskVoid BuildBoardAsync()
         {
+            LevelDefinition level = await _levelLoader.LoadAsync();
+
             foreach (LevelItemEntry entry in level.Items)
                 Spawn(entry);
 
             _log.Info($"Board built with {_items.Count} items. Tap them!");
+            _signalBus.Fire(new BoardBuiltSignal(_items.Count));
         }
 
         private void Spawn(LevelItemEntry entry)
