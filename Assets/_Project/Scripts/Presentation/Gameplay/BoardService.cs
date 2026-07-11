@@ -66,6 +66,9 @@ namespace TripleMatch.Presentation.Gameplay
 
         private void OnItemPicked(ItemView item)
         {
+            // Item is leaving the board for the tray (TrayService handles the fly-in);
+            // the board just stops tracking it.
+            _items.Remove(item);
             _log.Info($"Picked: {item.Type} (at {item.transform.position})");
         }
     }
