@@ -7,11 +7,13 @@ namespace TripleMatch.Application.Signals
     {
         public ItemType ItemType { get; }
         public int SlotIndex { get; }
+        public int Length { get; }
 
-        public MatchMadeSignal(ItemType itemType, int slotIndex)
+        public MatchMadeSignal(ItemType itemType, int slotIndex, int length)
         {
             ItemType = itemType;
             SlotIndex = slotIndex;
+            Length = length;
         }
     }
 }

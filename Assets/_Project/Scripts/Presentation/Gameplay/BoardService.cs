@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TripleMatch.Application.Services;
+using TripleMatch.Application.Signals;
 using TripleMatch.Configs;
 using UnityEngine;
 using Zenject;
@@ -16,6 +17,7 @@ namespace TripleMatch.Presentation.Gameplay
     {
         private readonly ItemView.Factory _factory;
         private readonly IInputService _input;
+        private readonly SignalBus _signalBus;
         private readonly ILogService _log;
         private readonly List<ItemDefinition> _definitions;
 
@@ -24,11 +26,13 @@ namespace TripleMatch.Presentation.Gameplay
         public BoardService(
             ItemView.Factory factory,
             IInputService input,
+            SignalBus signalBus,
             ILogService log,
             List<ItemDefinition> definitions)
         {
             _factory = factory;
             _input = input;
+            _signalBus = signalBus;
             _log = log;
             _definitions = definitions;
         }
@@ -36,6 +40,7 @@ namespace TripleMatch.Presentation.Gameplay
         public void Initialize()
         {
             BuildStubBoard();
+            _signalBus.Fire(new BoardBuiltSignal(_items.Count));
             _input.ItemPicked += OnItemPicked;
         }
 
@@ -46,13 +51,16 @@ namespace TripleMatch.Presentation.Gameplay
 
         private void BuildStubBoard()
         {
-            // A base row, plus one item stacked ON TOP of the first (nearer the camera),
-            // so tapping that spot proves the raycast picks the top one.
-            Spawn(0, new Vector3(0f, 0f, 0f));
+            // Two matching trios: the whole board is clearable, so tapping everything
+            // proves the Win path (remaining count reaches 0). Day 9 replaces this stub
+            // with real LevelDefinition data.
+            Spawn(0, new Vector3(-1.5f, 0f, 0f));
+            Spawn(0, new Vector3(-0.5f, 0f, 0f));
+            Spawn(0, new Vector3(0.5f, 0f, 0f));
             Spawn(1, new Vector3(1.5f, 0f, 0f));
-            Spawn(2, new Vector3(3f, 0f, 0f));
-            Spawn(2, new Vector3(3f, 0f, -0.5f));
-            Spawn(2, new Vector3(0f, 0f, -1f)); // overlaps item #0, but closer to the camera
+            Spawn(1, new Vector3(2.5f, 0f, 0f));
+            Spawn(1, new Vector3(3.5f, 0f, 0f));
+            Spawn(1, new Vector3(3.5f, 0f, 0f));
 
             _log.Info($"Board built with {_items.Count} items. Tap them!");
         }

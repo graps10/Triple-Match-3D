@@ -17,10 +17,17 @@ namespace TripleMatch.Installers
         {
             SignalBusInstaller.Install(Container);
             Container.DeclareSignal<ItemCollectedSignal>();
+            Container.DeclareSignal<MatchMadeSignal>();
+            Container.DeclareSignal<BoardBuiltSignal>();
+            Container.DeclareSignal<TrayOverflowSignal>();
+            Container.DeclareSignal<GameWonSignal>();
+            Container.DeclareSignal<GameLostSignal>();
 
-            // OptionalSubscriber: nobody listens to this yet (Day 8's win/lose condition
-            // will be the first), so firing it with zero subscribers is expected for now.
-            Container.DeclareSignal<MatchMadeSignal>().OptionalSubscriber();
+            // Zenject runs IInitializable.Initialize() in bind order by default (all default
+            // to priority 0). GameplayOutcomeService must subscribe to BoardBuiltSignal
+            // BEFORE BoardService.Initialize() fires it, so it's pinned to run first
+            // explicitly instead of relying on "happens to be bound later, so it's fine".
+            Container.BindExecutionOrder<GameplayOutcomeService>(-1);
 
             Container
                 .BindFactory<ItemDefinition, ItemView, ItemView.Factory>()
@@ -63,6 +70,11 @@ namespace TripleMatch.Installers
             // Stub SFX: subscribes to ItemCollectedSignal to prove the signal round-trip.
             Container
                 .BindInterfacesTo<CollectSfxStub>()
+                .AsSingle();
+
+            // Outcome: turns Board/Tray facts into Win/Lose and stops input via those signals.
+            Container
+                .BindInterfacesTo<GameplayOutcomeService>()
                 .AsSingle();
         }
     }

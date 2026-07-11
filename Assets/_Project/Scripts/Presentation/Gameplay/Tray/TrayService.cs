@@ -60,21 +60,26 @@ namespace TripleMatch.Presentation.Gameplay
 
             _signalBus.Fire(new ItemCollectedSignal(item.Type, slotIndex));
 
-            TryResolveMatch();
+            bool matched = TryResolveMatch();
+
+            // Lose condition: the tray filled up and this collect didn't free any slots.
+            if (!matched && _tray.IsFull)
+                _signalBus.Fire(new TrayOverflowSignal());
         }
 
-        private void TryResolveMatch()
+        private bool TryResolveMatch()
         {
             MatchResult result = _matchResolver.Resolve(_tray.Slots);
             if (!result.Matched)
-                return;
+                return false;
 
             _tray.RemoveRun(result.SlotIndex, result.Length);
             RemoveMatchedViews(result.SlotIndex, result.Length);
 
             FlyItemsToSlots();
 
-            _signalBus.Fire(new MatchMadeSignal(result.Type, result.SlotIndex));
+            _signalBus.Fire(new MatchMadeSignal(result.Type, result.SlotIndex, result.Length));
+            return true;
         }
 
         private void RemoveMatchedViews(int startIndex, int length)
