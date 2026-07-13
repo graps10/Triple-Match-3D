@@ -19,13 +19,13 @@ namespace TripleMatch.Presentation.UI
             _prefabsById = bindings.ToDictionary(binding => binding.Id, binding => binding.Prefab);
         }
 
-        public TView Push<TView>(ScreenId id) where TView : ScreenView
+        public TView Push<TView>(ScreenId id, params object[] extraArgs) where TView : ScreenView
         {
             ScreenView prefab = _prefabsById[id];
 
             // Screens under it stay visible (not hidden) - new siblings render on top by
             // default Canvas ordering, so this alone gives the "popup over HUD" look.
-            TView view = _container.InstantiatePrefabForComponent<TView>(prefab, _uiRoot.ScreenParent);
+            TView view = _container.InstantiatePrefabForComponent<TView>(prefab, _uiRoot.ScreenParent, extraArgs);
             _stack.Push(view);
             return view;
         }

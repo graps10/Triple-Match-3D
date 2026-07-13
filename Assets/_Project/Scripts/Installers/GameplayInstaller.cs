@@ -23,6 +23,7 @@ namespace TripleMatch.Installers
             Container.DeclareSignal<TrayOverflowSignal>();
             Container.DeclareSignal<GameWonSignal>();
             Container.DeclareSignal<GameLostSignal>();
+            Container.DeclareSignal<LevelRewardSignal>();
 
             // Zenject runs IInitializable.Initialize() in bind order by default (all default
             // to priority 0). GameplayOutcomeService must subscribe to BoardBuiltSignal
@@ -58,9 +59,15 @@ namespace TripleMatch.Installers
                 .AsSingle()
                 .WithArguments(itemDefinitions);
 
-            // Reacts to the level being won by sending the player back to Meta.
+            // Reacts to gameplay outcome signals by showing the matching popup.
             Container
                 .BindInterfacesTo<GameplayFlowController>()
+                .AsSingle();
+
+            // Separate from GameplayOutcomeService (SRP) - computes stars/coins for a win
+            // and reports them via LevelRewardSignal.
+            Container
+                .BindInterfacesTo<LevelRewardService>()
                 .AsSingle();
 
             // Tray: 7 designer-placed slot Transforms in the Gameplay scene.

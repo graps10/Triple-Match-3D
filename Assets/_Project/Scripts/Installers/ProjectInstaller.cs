@@ -40,6 +40,9 @@ namespace TripleMatch.Installers
             // after the scene transition - a plain SceneContext field wouldn't survive it.
             Container.Bind<ILevelSelectionService>().To<LevelSelectionService>().AsSingle();
 
+            // Project-scoped: coins earned on a level must still show after returning to Meta.
+            Container.Bind<IEconomyService>().To<EconomyService>().AsSingle();
+
             // UnderTransform(transform) parents the spawned UIRoot under ProjectContext
             // itself, so it inherits ProjectContext's DontDestroyOnLoad instead of being
             // destroyed on the very next scene load like anything scene-scoped would be.
@@ -62,6 +65,8 @@ namespace TripleMatch.Installers
             // lifetime of the whole game).
             Container.Bind<HudPresenter>().AsTransient();
             Container.Bind<PopupPresenter>().AsTransient();
+            Container.Bind<WinPopupPresenter>().AsTransient();
+            Container.Bind<LosePopupPresenter>().AsTransient();
         }
     }
 }
