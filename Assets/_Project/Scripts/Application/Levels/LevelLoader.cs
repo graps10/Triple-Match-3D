@@ -1,3 +1,4 @@
+using System;
 using Cysharp.Threading.Tasks;
 using TripleMatch.Application.Services;
 using TripleMatch.Configs;
@@ -5,7 +6,7 @@ using UnityEngine;
 
 namespace TripleMatch.Application.Levels
 {
-    public class LevelLoader : ILevelLoader
+    public class LevelLoader : ILevelLoader, IDisposable
     {
         private const int Default_Level_Index = 0;
         private const string Theme_Key = "Theme_Kitchen";
@@ -25,5 +26,8 @@ namespace TripleMatch.Application.Levels
             await _assetProvider.LoadAsync<GameObject>(Theme_Key);
             return _levelSource.GetLevel(Default_Level_Index);
         }
+
+        public void Unload() => _assetProvider.Release(Theme_Key);
+        public void Dispose() => Unload();
     }
 }

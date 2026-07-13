@@ -16,7 +16,7 @@ MonoBehaviour:
   m_GUID: b1c9212e0c0f4f44faefb67a6caf3a7a
   m_SerializeEntries:
   - m_GUID: e05832c5c38b6d7449d91ee84bfba4f4
-    m_Address: Theme_Kitche
+    m_Address: Theme_Kitchen
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

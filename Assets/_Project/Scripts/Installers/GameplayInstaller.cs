@@ -54,9 +54,11 @@ namespace TripleMatch.Installers
                 .AsSingle()
                 .WithArguments(levels);
 
+            // Both interfaces bound (not just Self) since nothing needs the concrete class -
+            // ILevelLoader for BoardService, IDisposable so Zenject releases the theme on
+            // scene teardown.
             Container
-                .Bind<ILevelLoader>()
-                .To<LevelLoader>()
+                .BindInterfacesTo<LevelLoader>()
                 .AsSingle();
 
             // Board: builds the layout and reacts to picks (IInitializable/IDisposable).
