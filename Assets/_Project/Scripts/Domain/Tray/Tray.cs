@@ -28,5 +28,8 @@ namespace TripleMatch.Domain
 
         // Removes a contiguous run (e.g. a resolved match), shifting later slots left.
         public void RemoveRun(int startIndex, int count) => _slots.RemoveRange(startIndex, count);
+
+        // Removes exactly one slot (e.g. an Undo booster reversing the last Collect).
+        public void RemoveAt(int index) => _slots.RemoveAt(index);
     }
 }

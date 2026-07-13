@@ -4,6 +4,7 @@ using DG.Tweening;
 using TripleMatch.Application.Services;
 using TripleMatch.Application.Signals;
 using TripleMatch.Domain;
+using UnityEngine;
 using Zenject;
 
 namespace TripleMatch.Presentation.Gameplay
@@ -21,7 +22,12 @@ namespace TripleMatch.Presentation.Gameplay
         private readonly Tray _tray = new();
         private readonly List<ItemView> _slotItems = new();
 
+        // Only the most recent Collect - overwritten by the next one, cleared the moment
+        // a match consumes it (nothing left to undo at that point).
+        private UndoCollectCommand _lastCollect;
+
         public bool IsFull => _tray.IsFull;
+        public bool CanUndo => _lastCollect != null;
 
         public TrayService(
             IBoardService board,
@@ -51,20 +57,40 @@ namespace TripleMatch.Presentation.Gameplay
                 return;
             }
 
+            Vector2 boardPosition = item.Position;
+            int boardLayer = item.Layer;
+
             item.SetInteractable(false);
 
             int slotIndex = _tray.Collect(item.Type);
             _slotItems.Insert(slotIndex, item);
+            _lastCollect = new UndoCollectCommand(item, slotIndex, boardPosition, boardLayer);
 
             FlyItemsToSlots();
 
             _signalBus.Fire(new ItemCollectedSignal(item.Type, slotIndex));
 
             bool matched = TryResolveMatch();
+            if (matched)
+                _lastCollect = null;
 
             // Lose condition: the tray filled up and this collect didn't free any slots.
             if (!matched && _tray.IsFull)
                 _signalBus.Fire(new TrayOverflowSignal());
+        }
+
+        public void Undo()
+        {
+            if (_lastCollect == null)
+                return;
+
+            _tray.RemoveAt(_lastCollect.SlotIndex);
+            _slotItems.RemoveAt(_lastCollect.SlotIndex);
+
+            _board.ReturnToBoard(_lastCollect.Item, _lastCollect.BoardPosition, _lastCollect.BoardLayer);
+
+            FlyItemsToSlots();
+            _lastCollect = null;
         }
 
         private bool TryResolveMatch()

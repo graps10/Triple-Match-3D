@@ -4,5 +4,6 @@ namespace TripleMatch.Application.Services
     {
         int Balance { get; }
         void AddCoins(int amount);
+        bool TrySpend(int amount);
     }
 }

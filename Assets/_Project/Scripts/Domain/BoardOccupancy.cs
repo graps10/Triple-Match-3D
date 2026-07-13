@@ -24,5 +24,9 @@ namespace TripleMatch.Domain
             if (_topLayerByPosition.TryGetValue(key, out int top) && top == layer)
                 _topLayerByPosition[key] = layer - 1;
         }
+
+        // Used when every tracked position is about to be reassigned at once (Shuffle) -
+        // cheaper and clearer than calling Remove for each old position individually.
+        public void Clear() => _topLayerByPosition.Clear();
     }
 }

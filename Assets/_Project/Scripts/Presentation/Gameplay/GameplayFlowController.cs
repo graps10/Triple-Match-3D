@@ -13,23 +13,37 @@ namespace TripleMatch.Presentation.Gameplay
     {
         private readonly SignalBus _signalBus;
         private readonly IScreenService _screenService;
+        private readonly IBoosterService _boosterService;
 
-        public GameplayFlowController(SignalBus signalBus, IScreenService screenService)
+        public GameplayFlowController(SignalBus signalBus, IScreenService screenService, IBoosterService boosterService)
         {
             _signalBus = signalBus;
             _screenService = screenService;
+            _boosterService = boosterService;
         }
 
         public void Initialize()
         {
             _signalBus.Subscribe<LevelRewardSignal>(OnLevelReward);
             _signalBus.Subscribe<GameLostSignal>(OnGameLost);
+
+            // IBoosterService is Gameplay-scoped and can't be resolved once HUD's own
+            // Presenter is built through the project-scoped ScreenService - handing it in
+            // as an extraArg here is the fix (see HudView's Construct for the full reasoning).
+            _screenService.Push<HudView>(ScreenId.Hud, _boosterService);
         }
 
         public void Dispose()
         {
             _signalBus.Unsubscribe<LevelRewardSignal>(OnLevelReward);
             _signalBus.Unsubscribe<GameLostSignal>(OnGameLost);
+
+            // HUD lives on the persistent UIRoot, not in this scene - it survives scene
+            // teardown unless popped explicitly. This fires on every way Gameplay ends
+            // (Win, Lose+Retry, a scene reload), always leaving HUD as the stack's top by
+            // then (Win/Lose popups already popped themselves before triggering the
+            // scene transition that gets here).
+            _screenService.Pop();
         }
 
         private void OnLevelReward(LevelRewardSignal signal) =>

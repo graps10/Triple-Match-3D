@@ -92,6 +92,18 @@ namespace TripleMatch.Installers
                 .BindInterfacesTo<CollectSfxStub>()
                 .AsSingle();
 
+            // Strategy: three interchangeable IBooster implementations, all bound to the
+            // same interface - Zenject collects them into one List<IBooster> for whoever
+            // asks for it (see BoosterService's constructor).
+            Container.Bind<IBooster>().To<UndoBooster>().AsSingle();
+            Container.Bind<IBooster>().To<ShuffleBooster>().AsSingle();
+            Container.Bind<IBooster>().To<ExtraSlotsBooster>().AsSingle();
+
+            Container
+                .Bind<IBoosterService>()
+                .To<BoosterService>()
+                .AsSingle();
+
             // Outcome: turns Board/Tray facts into Win/Lose and stops input via those signals.
             Container
                 .BindInterfacesTo<GameplayOutcomeService>()

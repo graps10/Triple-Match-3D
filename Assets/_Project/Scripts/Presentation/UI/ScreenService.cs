@@ -36,7 +36,8 @@ namespace TripleMatch.Presentation.UI
                 return;
 
             ScreenView top = _stack.Pop();
-            Object.Destroy(top.gameObject);
+            if (top != null)
+                Object.Destroy(top.gameObject);
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using TripleMatch.Application.Levels;
 using TripleMatch.Application.Services;
 using TripleMatch.Application.Signals;
@@ -15,6 +16,8 @@ namespace TripleMatch.Presentation.Gameplay
     public class BoardService : IBoardService, IInitializable, IDisposable
     {
         private const float Layer_Depth_Step = 0.5f;
+        private const float Shuffle_Duration = 0.4f;
+        private const float Shuffle_Jump_Power = 1f;
 
         private readonly ItemView.Factory _factory;
         private readonly IInputService _input;
@@ -85,6 +88,56 @@ namespace TripleMatch.Presentation.Gameplay
 
             _occupancy.Register(entry.Position.x, entry.Position.y, entry.Layer);
             _items.Add(item);
+        }
+
+        public void ReturnToBoard(ItemView item, Vector2 position, int layer)
+        {
+            item.PlaceOnBoard(position, layer);
+
+            float z = position.y - layer * Layer_Depth_Step;
+            item.transform.position = new Vector3(position.x, 0f, z);
+            item.SetInteractable(true);
+
+            _occupancy.Register(position.x, position.y, layer);
+            _items.Add(item);
+        }
+
+        public void Shuffle()
+        {
+            // Reuse the exact set of positions/layers already on the board - no new
+            // positions invented, so this can never collide with anything.
+            List<(Vector2 Position, int Layer)> slots = _items
+                .Select(item => (item.Position, item.Layer))
+                .ToList();
+            ShuffleInPlace(slots);
+
+            _occupancy.Clear();
+            for (int i = 0; i < _items.Count; i++)
+            {
+                ItemView item = _items[i];
+                (Vector2 position, int layer) = slots[i];
+
+                // Logical position updates immediately (occlusion/picking must be correct
+                // right away); the transform only catches up visually, via the jump below -
+                // same "logic first, animation follows" split TrayService already uses.
+                item.PlaceOnBoard(position, layer);
+                _occupancy.Register(position.x, position.y, layer);
+
+                float z = position.y - layer * Layer_Depth_Step;
+                Vector3 target = new Vector3(position.x, 0f, z);
+
+                item.transform.DOKill();
+                item.transform.DOJump(target, Shuffle_Jump_Power, 1, Shuffle_Duration).SetEase(Ease.OutQuad);
+            }
+        }
+
+        private static void ShuffleInPlace<T>(IList<T> list)
+        {
+            for (int i = list.Count - 1; i > 0; i--)
+            {
+                int j = UnityEngine.Random.Range(0, i + 1);
+                (list[i], list[j]) = (list[j], list[i]);
+            }
         }
 
         private void OnItemPicked(ItemView item)
