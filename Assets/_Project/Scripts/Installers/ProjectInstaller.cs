@@ -6,6 +6,7 @@ using TripleMatch.Configs;
 using TripleMatch.Infrastructure.AssetManagement;
 using TripleMatch.Infrastructure.Logging;
 using TripleMatch.Infrastructure.Scenes;
+using TripleMatch.Presentation.UI;
 using UnityEngine;
 using Zenject;
 
@@ -14,6 +15,8 @@ namespace TripleMatch.Installers
     public class ProjectInstaller : MonoInstaller
     {
         [SerializeField] private List<LevelDefinition> levels;
+        [SerializeField] private UIRoot uiRootPrefab;
+        [SerializeField] private List<ScreenBinding> screens;
 
         public override void InstallBindings()
         {
@@ -36,6 +39,29 @@ namespace TripleMatch.Installers
             // Project-scoped: written by Meta's level map, read by Gameplay's BoardService
             // after the scene transition - a plain SceneContext field wouldn't survive it.
             Container.Bind<ILevelSelectionService>().To<LevelSelectionService>().AsSingle();
+
+            // UnderTransform(transform) parents the spawned UIRoot under ProjectContext
+            // itself, so it inherits ProjectContext's DontDestroyOnLoad instead of being
+            // destroyed on the very next scene load like anything scene-scoped would be.
+            Container
+                .Bind<UIRoot>()
+                .FromComponentInNewPrefab(uiRootPrefab)
+                .UnderTransform(transform)
+                .AsSingle()
+                .NonLazy();
+
+            Container
+                .Bind<IScreenService>()
+                .To<ScreenService>()
+                .AsSingle()
+                .WithArguments(screens)
+                .NonLazy();
+
+            // Transient: a fresh Presenter per screen instance, matching the fresh View
+            // ScreenService.Push spawns each time (not one Presenter shared for the
+            // lifetime of the whole game).
+            Container.Bind<HudPresenter>().AsTransient();
+            Container.Bind<PopupPresenter>().AsTransient();
         }
     }
 }
