@@ -5,7 +5,7 @@ namespace TripleMatch.Application.Levels
 {
     public interface ILevelLoader
     {
-        UniTask<LevelDefinition> LoadAsync();
+        UniTask<LevelDefinition> LoadAsync(int levelIndex);
         void Unload();
     }
 }

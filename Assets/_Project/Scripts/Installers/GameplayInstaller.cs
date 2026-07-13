@@ -15,6 +15,10 @@ namespace TripleMatch.Installers
         [SerializeField] private List<ItemDefinition> itemDefinitions;
         [SerializeField] private List<LevelDefinition> levels;
 
+        // Temporary: which level to play, until Meta's level map (Day 13) picks one at
+        // runtime and passes it in instead of this being set by hand in the Inspector.
+        [SerializeField] private int levelIndex;
+
         public override void InstallBindings()
         {
             SignalBusInstaller.Install(Container);
@@ -65,7 +69,7 @@ namespace TripleMatch.Installers
             Container
                 .BindInterfacesAndSelfTo<BoardService>()
                 .AsSingle()
-                .WithArguments(itemDefinitions);
+                .WithArguments(new object[] { itemDefinitions, levelIndex });
 
             // Tray: 7 designer-placed slot Transforms in the Gameplay scene.
             Container

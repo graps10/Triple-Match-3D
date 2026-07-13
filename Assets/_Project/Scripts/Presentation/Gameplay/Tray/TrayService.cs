@@ -12,7 +12,7 @@ namespace TripleMatch.Presentation.Gameplay
     {
         private const float Flight_Duration = 0.35f;
 
-        private readonly IInputService _input;
+        private readonly IBoardService _board;
         private readonly IMatchResolver _matchResolver;
         private readonly SignalBus _signalBus;
         private readonly ILogService _log;
@@ -24,22 +24,22 @@ namespace TripleMatch.Presentation.Gameplay
         public bool IsFull => _tray.IsFull;
 
         public TrayService(
-            IInputService input,
+            IBoardService board,
             IMatchResolver matchResolver,
             SignalBus signalBus,
             ILogService log,
             TraySlotsView slotsView)
         {
-            _input = input;
+            _board = board;
             _matchResolver = matchResolver;
             _signalBus = signalBus;
             _log = log;
             _slotsView = slotsView;
         }
 
-        public void Initialize() => _input.ItemPicked += OnItemPicked;
+        public void Initialize() => _board.ItemPickValidated += OnItemPicked;
 
-        public void Dispose() => _input.ItemPicked -= OnItemPicked;
+        public void Dispose() => _board.ItemPickValidated -= OnItemPicked;
 
         private void OnItemPicked(ItemView item) => Collect(item);
 

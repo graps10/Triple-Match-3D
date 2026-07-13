@@ -19,8 +19,10 @@ namespace TripleMatch.Configs
     [CreateAssetMenu(fileName = "Level_", menuName = "TripleMatch/Level Definition")]
     public class LevelDefinition : ScriptableObject
     {
+        [SerializeField] private GameTheme theme;
         [SerializeField] private List<LevelItemEntry> items;
 
+        public GameTheme Theme => theme;
         public IReadOnlyList<LevelItemEntry> Items => items;
     }
 }

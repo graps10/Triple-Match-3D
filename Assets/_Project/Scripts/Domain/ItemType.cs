@@ -7,6 +7,11 @@ namespace TripleMatch.Domain
         Carrot,
         Mug,
         Fish,
-        Egg
+        Egg,
+        Hammer,
+        Nail,
+        Wrench,
+        Bolt,
+        Saw
     }
 }
