@@ -37,7 +37,13 @@ namespace TripleMatch.Infrastructure.AssetManagement
             if (_refCounts[key] > 0)
                 return;
 
-            Addressables.Release(handle);
+            // On a full Play Mode stop (not a normal scene transition), Zenject's teardown
+            // and Addressables' own ResourceManager teardown race each other - the handle
+            // can already point at a dead operation by the time we get here. IsValid()
+            // guards that Editor-only case; our own bookkeeping still gets cleaned up.
+            if (handle.IsValid())
+                Addressables.Release(handle);
+
             _handles.Remove(key);
             _refCounts.Remove(key);
         }

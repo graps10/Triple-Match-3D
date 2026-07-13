@@ -7,7 +7,9 @@
         "TripleMatch.Application",
         "Zenject",
         "Unity.InputSystem",
-        "UniTask"
+        "UniTask",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

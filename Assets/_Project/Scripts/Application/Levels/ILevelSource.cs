@@ -5,5 +5,6 @@ namespace TripleMatch.Application.Levels
     public interface ILevelSource
     {
         LevelDefinition GetLevel(int index);
+        int Count { get; }
     }
 }

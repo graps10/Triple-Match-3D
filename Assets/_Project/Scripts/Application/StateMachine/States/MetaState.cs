@@ -4,8 +4,8 @@ using TripleMatch.Application.Services;
 namespace TripleMatch.Application.StateMachine.States
 {
     /// <summary>
-    /// Main menu / level map. For now it just loads the Meta scene. Later it will host
-    /// level selection and transition into GameplayState with the chosen level.
+    /// Main menu / level map. Loads the Meta scene; level selection itself lives in
+    /// Meta's own LevelMapPresenter (scene-scoped), not here.
     /// </summary>
     public class MetaState : IState
     {

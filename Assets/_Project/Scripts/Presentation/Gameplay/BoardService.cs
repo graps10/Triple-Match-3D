@@ -22,7 +22,7 @@ namespace TripleMatch.Presentation.Gameplay
         private readonly ILogService _log;
         private readonly ILevelLoader _levelLoader;
         private readonly Dictionary<ItemType, ItemDefinition> _definitionsByType;
-        private readonly int _levelIndex;
+        private readonly ILevelSelectionService _levelSelection;
         private readonly BoardOccupancy _occupancy = new();
 
         private readonly List<ItemView> _items = new();
@@ -38,7 +38,7 @@ namespace TripleMatch.Presentation.Gameplay
             ILogService log,
             ILevelLoader levelLoader,
             List<ItemDefinition> definitions,
-            int levelIndex)
+            ILevelSelectionService levelSelection)
         {
             _factory = factory;
             _input = input;
@@ -46,7 +46,7 @@ namespace TripleMatch.Presentation.Gameplay
             _log = log;
             _levelLoader = levelLoader;
             _definitionsByType = definitions.ToDictionary(definition => definition.Type);
-            _levelIndex = levelIndex;
+            _levelSelection = levelSelection;
         }
 
         public void Initialize()
@@ -64,7 +64,7 @@ namespace TripleMatch.Presentation.Gameplay
 
         private async UniTaskVoid BuildBoardAsync()
         {
-            LevelDefinition level = await _levelLoader.LoadAsync(_levelIndex);
+            LevelDefinition level = await _levelLoader.LoadAsync(_levelSelection.SelectedLevelIndex);
 
             foreach (LevelItemEntry entry in level.Items)
                 Spawn(entry);

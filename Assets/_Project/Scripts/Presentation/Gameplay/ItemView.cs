@@ -38,8 +38,6 @@ namespace TripleMatch.Presentation.Gameplay
 
         // Zenject factory: Create(ItemDefinition) -> ItemView. The binding (in
         // GameplayInstaller) decides HOW it is produced (spawn prefab + inject).
-        public class Factory : PlaceholderFactory<ItemDefinition, ItemView>
-        {
-        }
+        public class Factory : PlaceholderFactory<ItemDefinition, ItemView> { }
     }
 }

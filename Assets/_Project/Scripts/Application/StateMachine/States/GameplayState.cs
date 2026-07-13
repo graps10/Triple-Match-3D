@@ -4,8 +4,9 @@ using TripleMatch.Application.Services;
 namespace TripleMatch.Application.StateMachine.States
 {
     /// <summary>
-    /// In-level state. Loads the Gameplay scene when entered. Not triggered yet — it will
-    /// be entered from MetaState once level selection exists (Day 13).
+    /// In-level state. Loads the Gameplay scene when entered. Triggered by a level button
+    /// in Meta's LevelMapPresenter/LevelButtonView, after it records the choice in
+    /// ILevelSelectionService.
     /// </summary>
     public class GameplayState : IState
     {

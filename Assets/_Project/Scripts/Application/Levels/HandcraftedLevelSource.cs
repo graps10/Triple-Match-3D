@@ -13,5 +13,6 @@ namespace TripleMatch.Application.Levels
         }
 
         public LevelDefinition GetLevel(int index) => _levels[index];
+        public int Count => _levels.Count;
     }
 }

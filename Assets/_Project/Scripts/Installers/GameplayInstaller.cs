@@ -13,11 +13,6 @@ namespace TripleMatch.Installers
     {
         [SerializeField] private ItemView itemPrefab;
         [SerializeField] private List<ItemDefinition> itemDefinitions;
-        [SerializeField] private List<LevelDefinition> levels;
-
-        // Temporary: which level to play, until Meta's level map (Day 13) picks one at
-        // runtime and passes it in instead of this being set by hand in the Inspector.
-        [SerializeField] private int levelIndex;
 
         public override void InstallBindings()
         {
@@ -50,14 +45,6 @@ namespace TripleMatch.Installers
                 .BindInterfacesTo<InputService>()
                 .AsSingle();
 
-            // Level data: hand-authored today, swappable for a procedural source later
-            // (GDD §16) without touching anything that consumes ILevelLoader.
-            Container
-                .Bind<ILevelSource>()
-                .To<HandcraftedLevelSource>()
-                .AsSingle()
-                .WithArguments(levels);
-
             // Both interfaces bound (not just Self) since nothing needs the concrete class -
             // ILevelLoader for BoardService, IDisposable so Zenject releases the theme on
             // scene teardown.
@@ -69,7 +56,12 @@ namespace TripleMatch.Installers
             Container
                 .BindInterfacesAndSelfTo<BoardService>()
                 .AsSingle()
-                .WithArguments(new object[] { itemDefinitions, levelIndex });
+                .WithArguments(itemDefinitions);
+
+            // Reacts to the level being won by sending the player back to Meta.
+            Container
+                .BindInterfacesTo<GameplayFlowController>()
+                .AsSingle();
 
             // Tray: 7 designer-placed slot Transforms in the Gameplay scene.
             Container
